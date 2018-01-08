@@ -1,8 +1,12 @@
 #Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks
+<<<<<<< HEAD
 1/8/2018 3:43:17 PM  by-llpspark
+=======
+
+>>>>>>> 265e82b94dff170a44fa2211c17b52a9a04a85dd
 ##abstrat
 <font size=4>
-&emsp;&emsp;faster-rcnn是继fast-rcnn后two-stage基于region-proposal目标检测的又一大突破。rcnn检测任务可分为三个阶段：1）ss（selective search）算法提取region proposal 2）对提取的region proposals通过神经网络提取特征 3）将提取的特征经过分类器分类和回归算法对proposal的位置进行微调。fast-rcnn将rcnn的工作进行了简化变成两个阶段：1）使用ss算法提取region proposal 2对提取的proposal是经过神经网络提取特征并通过分类器进行分类和通过回归算法进行proposal位置微调。而本文直接将fast-rcnn两步目标检测任务变成了单步的可端到端训练和测试的目标检测任务。其最大的核心就是提出的RPN（Region Proposal Network）网络，使用通过rpn取代ss提取proposal步骤，并且rpn与fast-rcnn合并，共同分享使用神经网络提取的特征。<font color=	#A52A2A>这里需要首先明确的是rpn网络只是提取前景和背景的，并不是直接做分类的检测！！</font>作者在各数据集和竞赛都达到了很牛逼的结果，当然论文发表小两年了，现在无论是工业界还是学术界还都在翘首、复制和延续faster-rcnn方法。
+&emsp;&emsp;faster-rcnn是继fast-rcnn后two-stage基于region-proposal目标检测的又一大突破。rcnn检测任务可分为三个阶段：1）ss（selective search）算法提取region proposal 2）对提取的region proposals通过神经网络提取特征 3）将提取的特征经过分类器分类和回归算法对proposal的位置进行微调。fast-rcnn将rcnn的工作进行了简化变成两个阶段：1）使用ss算法提取region proposal 2对提取的proposal是经过神经网络提取特征并通过分类器进行分类和通过回归算法进行proposal位置微调。而本文直接将fast-rcnn两步目标检测任务变成了单步的可端到端训练和测试的目标检测任务。其最大的核心就是提出的RPN（Region Proposal Network）网络，使用通过rpn取代ss提取proposal步骤，并且rpn与fast-rcnn合并，共同分享使用神经网络提取的特征。<font color=#A52A2A>这里需要首先明确的是rpn网络只是提取前景和背景的，并不是直接做分类的检测！！</font>作者在各数据集和竞赛都达到了很牛逼的结果，当然论文发表小两年了，现在无论是工业界还是学术界还都在翘首、复制和延续faster-rcnn方法。
 ##introduction
 &emsp;&emsp;首先介绍当前基于rcnn系列的检测框架拖速度的主要原因还是在与region proposal的提取上，所以解决检测速度首先要在proposal提取阶段下手，作者分析当前诸如ss和EdgeBoxes检测方法速度都太慢（一方面这些方法在cpu上跑，肯定拖累后续的可在GPU上加速的检测网络速度，另一方面重新在GPU上实现以上算法，但其不能与后续的检测算法共享计算，速度也不会提升太多）。本文在proposal提取算法上进行了改变，通过深度神经网络（RPN）优雅地解决了proposal的计算问题，并与fast-rcnn检测框架无缝地结合在一起，共同共享卷积特征，实现proposal计算零开销。  
 
