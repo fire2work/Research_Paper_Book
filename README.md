@@ -1,4 +1,4 @@
 # Research\_Book
 
-This Repository summarized some papers
+This Repository is related to research.
 
