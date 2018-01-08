@@ -1,6 +1,6 @@
 # Summary
 
 * [Introduction](README.md)
-* [Papers Relevant](papers-relevant.md)
+* Papers Relevant
   * [Faster-RCNN](faster-rcnn.md)
 
