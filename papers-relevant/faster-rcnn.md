@@ -26,10 +26,10 @@
 ### Deep Networks for Object Detection
 * RCNN算法：其本质是分类器，并没有做预测目标的bounding 位置，检测其精度取决于region proposal模块
 * OverFeat:假定只有单一目标，使用全连接层预测目标的坐标位置。之后全连接层被转化为卷积层用于预测多个目标。
-* MutiBoxes:...  
- 
+* MutiBoxes:...   
+
 ## Faster-RCNN
-&emsp;&emsp;Faster-RCNN由两个模块组成。第一个模块是用于提取region proposal的卷积神经网络，第二个模块是Fast-rcnn检测子（detector）。使用最近流行的神经网络术语“关注机制”，RPN网络告诉Fast-RCNN关注哪、往哪看。RPN和Fast-RCNN构成一个单一、一体的目标检测框架.如下图：
+&emsp;&emsp;Faster-RCNN由两个模块组成。第一个模块是用于提取region proposal的卷积神经网络，第二个模块是Fast-rcnn检测子（detector）。使用最近流行的神经网络术语“关注机制”，RPN网络告诉Fast-RCNN关注哪、往哪看。RPN和Fast-RCNN构成一个单一、一体的目标检测框架.如下图：   
 
 .....................................
 ![faster-rcnn](https://raw.githubusercontent.com/fire2work/Research_Paper_Book/d390fc0fa845aebd67e04d78c7e0dff6cd8dc610/assets/faster-rcnn.png)..............
