@@ -24,22 +24,12 @@
 
 ### Deep Networks for Object Detection   
 
-<<<<<<< HEAD
 * RCNN算法：其本质是分类器，并没有做预测目标的bounding 位置，检测其精度取决于region proposal模块   
-
-* OverFeat:假定只有单一目标，使用全连接层预测目标的坐标位置。之后全连接层被转化为卷积层用于预测多个目标。   
-=======
-## related work   
-
-### Object proposals   
->>>>>>> 826cfd7c6885e9c912028eb927aa03c26b271139
-
+* OverFeat:假定只有单一目标，使用全连接层预测目标的坐标位置。之后全连接层被转化为卷积层用于预测多个目标。
 * MutiBoxes:...   
 
-<<<<<<< HEAD
 ## Faster-RCNN   
 
-=======
 ### Deep Networks for Object Detection   
 
 * RCNN算法：其本质是分类器，并没有做预测目标的bounding 位置，检测其精度取决于region proposal模块
@@ -48,7 +38,7 @@
 
 ## Faster-RCNN   
 
->>>>>>> 826cfd7c6885e9c912028eb927aa03c26b271139
+
 &emsp;&emsp;Faster-RCNN由两个模块组成。第一个模块是用于提取region proposal的卷积神经网络，第二个模块是Fast-rcnn检测子（detector）。使用最近流行的神经网络术语“关注机制”，RPN网络告诉Fast-RCNN关注哪、往哪看。RPN和Fast-RCNN构成一个单一、一体的目标检测框架.如下图：   
 
 .....................................
@@ -77,8 +67,7 @@ reg层：预测proposal的anchor对应的proposal的（x,y,w,h）。cls层：判
 &emsp;&emsp;这里附加一段别人博客的注解：在上图中，要注意，3\*3卷积核的中心点对应原图（re-scale，源代码设置re-scale为600\*1000）上的位置（点），将该点作为anchor的中心点，在原图中框出多尺度、多种长宽比的anchors。所以，anchor不在conv特征图上，而在原图上。对于一个大小为H*W的特征层，它上面每一个像素点对应9个anchor,这里有一个重要的参数feat_stride = 16， 它表示特征层上移动一个点，对应原图移动16个像素点(看一看网络中的stride就明白16的来历了)。把这9个anchor的坐标进行平移操作，获得在原图上的坐标。之后根据ground truth label和这些anchor之间的关系生成rpn_lables，具体的方法论文中有提到，根据overlap来计算，这里就不详细说明了，生成的rpn\_labels中，positive的位置被置为1，negative的位置被置为0，其他的为-1。box\_target通过_compute_targets()函数生成，这个函数实际上是寻找每一个anchor最匹配的ground truth box， 然后进行论文中提到的box坐标的转化。http://blog.csdn.net/zhangwenjie89/article/details/52012880   
   
 ##### 1）Translation-Invariant Anchor   
-    
-<<<<<<< HEAD
+
 &emsp;&emsp;Anchor方式生成proposal，对图像中的目标具有平移不变性。   
 
 ##### 2）Muti-Scale Anchors as Regression References   
@@ -87,35 +76,26 @@ reg层：预测proposal的anchor对应的proposal的（x,y,w,h）。cls层：判
 
 ##### 3）Loss Function   
 
-=======
 &emsp;&emsp;Anchor方式生成proposal，对图像中的目标具有平移不变性。
 ##### 2）Muti-Scale Anchors as Regression References
 &emsp;&emsp;<font color=#A52A2A>Faster-rcnn中Anchor对proposal的提取并没有显式地提取任何候选窗口，完全使用网络自身完成判断和修正。</font>
 ##### 3）Loss Function   
 
->>>>>>> 826cfd7c6885e9c912028eb927aa03c26b271139
 ![](https://raw.githubusercontent.com/fire2work/Research_Paper_Book/d390fc0fa845aebd67e04d78c7e0dff6cd8dc610/assets/faster-rcnn_loss.png)   
 
 ##### 4）Training RPNs   
 
 &emsp;&emsp;作者通过SGD方式以端到端的方向传播算法训练RPN网络，并采用图像“中心采样”策略训练网络。每一个mini-batch采样自一幅图像中的很多正负anchors，这样能够使所有anchor都能优化rpn的损失函数，但是这样的优化会倾向于负样本（因为负样本占大多数）。于是，作者采取这样的策略：每一个mini-batch包含从一张图像中**随机提取**的256个anchor（注意，不是所有的anchor都用来训练），前景样本和背景样本均取128个，达到正负比例为1:1。如果一个图像中的正样本数小于128，则多用一些负样本以满足有256个Proposal可以用于训练。这样保证不会发生负样本倾斜问题。
 具体loss的修正过程见博客：http://blog.csdn.net/qq_17448289/article/details/52871461   
-<<<<<<< HEAD
 
-##### 5）NMS   
-=======
-##### 5）NMS   
-
-![](https://raw.githubusercontent.com/fire2work/Research_Paper_Book/d390fc0fa845aebd67e04d78c7e0dff6cd8dc610/assets/faster-rcnn_nms.png)
-&emsp;&emsp;训练时（eg：输入600\*1000的图像），如果anchor box的边界超过了图像边界，那这样的anchors对训练loss也不会产生影响，我们将超过边界的anchor舍弃不用。一幅600\*1000的图像经过VGG16后大约为40\*60，则此时的anchor数为40*60*9，约为20k个anchor boxes，再去除与边界相交的anchor boxes后，剩下约为6k个anchor boxes，这么多数量的anchor boxes之间肯定是有很多重叠区域，因此需要使用非极大值抑制法（NMS，non-maximum suppression）将IoU＞0.7的区域全部合并，最后就剩下约2k个anchor boxes（同理，在最终检测端，可以设置将概率大约某阈值P且IoU大约某阈值T的预测框采用NMS方法进行合并，注意：这里的预测框指的不是anchor boxes）。NMS不会影响最终的检测准确率，但是大幅地减少了建议框的数量。NMS之后，我们用建议区域中的top-N个来检测（即排过序后取N个）。
->>>>>>> 826cfd7c6885e9c912028eb927aa03c26b271139
+&emsp;&emsp;训练时（eg：输入600\*1000的图像），如果anchor box的边界超过了图像边界，那这样的anchors对训练loss也不会产生影响，我们将超过边界的anchor舍弃不用。一幅600\*1000的图像经过VGG16后大约为40\*60，则此时的anchor数为40*60*9，约为20k个anchor boxes，再去除与边界相交的anchor boxes后，剩下约为6k个anchor boxes，这么多数量的anchor boxes之间肯定是有很多重叠区域，因此需要使用非极大值抑制法（NMS，non-maximum suppression）将IoU＞0.7的区域全部合并，最后就剩下约2k个anchor boxes（同理，在最终检测端，可以设置将概率大约某阈值P且IoU大约某阈值T的预测框采用NMS方法进行合并，注意：这里的预测框指的不是anchor boxes）。NMS不会影响最终的检测准确率，但是大幅地减少了建议框的数量。NMS之后，我们用建议区域中的top-N个来检测（即排过序后取N个）。   
 
 ![](https://raw.githubusercontent.com/fire2work/Research_Paper_Book/d390fc0fa845aebd67e04d78c7e0dff6cd8dc610/assets/faster-rcnn_nms.png)   
 
 &emsp;&emsp;训练时（eg：输入600\*1000的图像），如果anchor box的边界超过了图像边界，那这样的anchors对训练loss也不会产生影响，我们将超过边界的anchor舍弃不用。一幅600\*1000的图像经过VGG16后大约为40\*60，则此时的anchor数为40*60*9，约为20k个anchor boxes，再去除与边界相交的anchor boxes后，剩下约为6k个anchor boxes，这么多数量的anchor boxes之间肯定是有很多重叠区域，因此需要使用非极大值抑制法（NMS，non-maximum suppression）将IoU＞0.7的区域全部合并，最后就剩下约2k个anchor boxes（同理，在最终检测端，可以设置将概率大约某阈值P且IoU大约某阈值T的预测框采用NMS方法进行合并，注意：这里的预测框指的不是anchor boxes）。NMS不会影响最终的检测准确率，但是大幅地减少了建议框的数量。NMS之后，我们用建议区域中的top-N个来检测（即排过序后取N个）。   
 
 * Sharing Features for RPN and Fast RCNN   
-* 
+
 下面说明在训练过程中rpn和fast--rcnn是如何实现共享卷积特征的（四步交替训练）：(Faster-R-CNN算法由两大模块组成：PRN候选框提取模块和Fast R-CNN检测模块。)   
 
 &emsp;&emsp;RPN和Fast R-CNN都是独立训练的，要用不同方式修改它们的卷积层。因此需要开发一种允许两个网络间共享卷积层的技术，而不是分别学习两个网络。注意到这不是仅仅定义一个包含了RPN和Fast R-CNN的单独网络，然后用反向传播联合优化它那么简单。原因是Fast R-CNN训练依赖于固定的目标建议框，而且并不清楚当同时改变建议机制时，学习Fast R-CNN会不会收敛。
