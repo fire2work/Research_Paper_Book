@@ -14,16 +14,20 @@
 &emsp;&emsp;首先介绍当前基于rcnn系列的检测框架拖速度的主要原因还是在与region proposal的提取上，所以解决检测速度首先要在proposal提取阶段下手，作者分析当前诸如ss和EdgeBoxes检测方法速度都太慢（一方面这些方法在cpu上跑，肯定拖累后续的可在GPU上加速的检测网络速度，另一方面重新在GPU上实现以上算法，但其不能与后续的检测算法共享计算，速度也不会提升太多）。本文在proposal提取算法上进行了改变，通过深度神经网络（RPN）优雅地解决了proposal的计算问题，并与fast-rcnn检测框架无缝地结合在一起，共同共享卷积特征，实现proposal计算零开销。  
 
 &emsp;&emsp;RPN网络其实是一种FCN（全卷积网络），由几层卷几层构成，通过与基于区域的检测子共同使用前阶段卷积得到的feature maps，在每个检测grid上生成对应类别分数和位置点。与之前的图像金字塔、滤波器金字塔等提取proposal方式不同，本文提出新的“anchor”方式进行proposal提取，避免了枚举图像或滤波器所有尺度和长宽比，模型在单一尺度的图像上训练和测试达到了很好的效果。  
-&emsp;&emsp;为了将RPN网络和Fast-rcnn网络融合为一体的检测框架，作者提出如下轮替的训练策略:先训练微调region proposal网络，再固定region proposal网络训练微调目标检测网络。这样训练网络收敛速度加快，并使网络前部分生成的feature maps在rpn和目标检测网络中能够共享使用。
+&emsp;&emsp;为了将RPN网络和Fast-rcnn网络融合为一体的检测框架，作者提出如下轮替的训练策略:先训练微调region proposal网络，再固定region proposal网络训练微调目标检测网络。这样训练网络收敛速度加快，并使网络前部分生成的feature maps在rpn和目标检测网络中能够共享使用。  
 
-## related work
-### Object proposals
+## related work  
+
+### Object proposals  
+
 * 分组超像素类方法：SS(Selective search)、CPMC、MCG 
-* 基于滑动窗口方法：EdgeBoxes
+* 基于滑动窗口方法：EdgeBoxes  
+
 ### Deep Networks for Object Detection
 * RCNN算法：其本质是分类器，并没有做预测目标的bounding 位置，检测其精度取决于region proposal模块
 * OverFeat:假定只有单一目标，使用全连接层预测目标的坐标位置。之后全连接层被转化为卷积层用于预测多个目标。
-* MutiBoxes:... 
+* MutiBoxes:...  
+ 
 ## Faster-RCNN
 &emsp;&emsp;Faster-RCNN由两个模块组成。第一个模块是用于提取region proposal的卷积神经网络，第二个模块是Fast-rcnn检测子（detector）。使用最近流行的神经网络术语“关注机制”，RPN网络告诉Fast-RCNN关注哪、往哪看。RPN和Fast-RCNN构成一个单一、一体的目标检测框架.如下图：
 
@@ -55,7 +59,7 @@ reg层：预测proposal的anchor对应的proposal的（x,y,w,h）。cls层：判
 &emsp;&emsp;Anchor方式生成proposal，对图像中的目标具有平移不变性。
 ##### 2）Muti-Scale Anchors as Regression References
 &emsp;&emsp;<font color=#A52A2A>Faster-rcnn中Anchor对proposal的提取并没有显式地提取任何候选窗口，完全使用网络自身完成判断和修正。</font>
-#####3）Loss Function
+##### 3）Loss Function
 
 ![](https://raw.githubusercontent.com/fire2work/Research_Paper_Book/d390fc0fa845aebd67e04d78c7e0dff6cd8dc610/assets/faster-rcnn_loss.png)
 
