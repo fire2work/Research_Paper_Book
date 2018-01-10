@@ -64,8 +64,9 @@ reg层：预测proposal的anchor对应的proposal的（x,y,w,h）。cls层：判
 
 作者提到，通过以上对RPN流程的描述，我们可以很自然地通过使用一个n*n(n=3)的卷积层后面接两个“同胞” 1*1的卷积层（reg和cls）来实现。   
 
-![](https://raw.githubusercontent.com/fire2work/Research_Paper_Book/master/assets/faster-rcnn_rpn.png)  
-&emsp;&emsp;这里附加一段别人博客的注解：在上图中，要注意，3\*3卷积核的中心点对应原图（re-scale，源代码设置re-scale为600\*1000）上的位置（点），将该点作为anchor的中心点，在原图中框出多尺度、多种长宽比的anchors。所以，anchor不在conv特征图上，而在原图上。对于一个大小为H*W的特征层，它上面每一个像素点对应9个anchor,这里有一个重要的参数feat_stride = 16， 它表示特征层上移动一个点，对应原图移动16个像素点(看一看网络中的stride就明白16的来历了)。把这9个anchor的坐标进行平移操作，获得在原图上的坐标。之后根据ground truth label和这些anchor之间的关系生成rpn_lables，具体的方法论文中有提到，根据overlap来计算，这里就不详细说明了，生成的rpn\_labels中，positive的位置被置为1，negative的位置被置为0，其他的为-1。box\_target通过_compute_targets()函数生成，这个函数实际上是寻找每一个anchor最匹配的ground truth box， 然后进行论文中提到的box坐标的转化。http://blog.csdn.net/zhangwenjie89/article/details/52012880   
+![](https://raw.githubusercontent.com/fire2work/Research_Paper_Book/master/assets/faster-rcnn_rpn.png)   
+  
+&emsp;&emsp;这里附加一段别人博客的注解：在上图中，要注意，3\*3卷积核的中心点对应原图（re-scale，源代码设置re-scale为600\*1000）上的位置（点），将该点作为anchor的中心点，在原图中框出多尺度、多种长宽比的anchors。所以，anchor不在conv特征图上，而在原图上。对于一个大小为H*W的特征层，它上面每一个像素点对应9个anchor,这里有一个重要的参数feat_stride = 16， 它表示特征层上移动一个点，对应原图移动16个像素点(看一看网络中的stride就明白16的来历了)。把这9个anchor的坐标进行平移操作，获得在原图上的坐标。之后根据ground truth label和这些anchor之间的关系生成rpn_lables，具体的方法论文中有提到，根据overlap来计算，这里就不详细说明了，生成的rpn\_labels中，positive的位置被置为1，negative的位置被置为0，其他的为-1。box\_target通过_compute_targets()函数生成，这个函数实际上是寻找每一个anchor最匹配的ground truth box， 然后进行论文中提到的box坐标的转化。\(http://blog.csdn.net/zhangwenjie89/article/details/52012880\)   
   
 ##### 1）Translation-Invariant Anchor   
 
@@ -75,11 +76,6 @@ reg层：预测proposal的anchor对应的proposal的（x,y,w,h）。cls层：判
 
 &emsp;&emsp;<font color=#A52A2A>Faster-rcnn中Anchor对proposal的提取并没有显式地提取任何候选窗口，完全使用网络自身完成判断和修正。</font>   
 
-##### 3）Loss Function   
-
-&emsp;&emsp;Anchor方式生成proposal，对图像中的目标具有平移不变性。
-##### 2）Muti-Scale Anchors as Regression References
-&emsp;&emsp;<font color=#A52A2A>Faster-rcnn中Anchor对proposal的提取并没有显式地提取任何候选窗口，完全使用网络自身完成判断和修正。</font>
 ##### 3）Loss Function   
 
 ![](https://raw.githubusercontent.com/fire2work/Research_Paper_Book/d390fc0fa845aebd67e04d78c7e0dff6cd8dc610/assets/faster-rcnn_loss.png)   
